@@ -1,0 +1,15 @@
+cms:
+  destination:
+    - destinationId
+    - name
+    - locationGroup
+    - residence:
+      - residenceId
+      - name
+
+inputs: 
+  - destination:
+    - destinationWhere: DestinationInputType!
+  - cms: 
+    - destinationWhere: DestinationInputType!
+    - residenceWhere: ResidenceInputType!

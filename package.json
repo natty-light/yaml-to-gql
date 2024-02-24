@@ -1,0 +1,19 @@
+{
+  "name": "yaml-to-gql",
+  "version": "1.0.0",
+  "main": "main.js",
+  "license": "MIT",
+  "type": "commonjs",
+  "scripts": {
+    "build": "npx tsc",
+    "go": "node dist/main.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "@types/yaml": "^1.9.7",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "yaml": "^2.3.4"
+  }
+}
