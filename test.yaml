@@ -2,7 +2,8 @@ cms:
   destination:
     - destinationId
     - name
-    - locationGroup
+    - locationGroup:
+      - name
     - residence:
       - residenceId
       - name
