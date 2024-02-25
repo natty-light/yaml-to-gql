@@ -50,18 +50,18 @@ const constructInputs = (nodes: Tree[]) => {
     return inputMap
 }
 
-const parseNode =(node: Leaf, inputs: InputMap, tabDepth: number): string => {
+const parseLeaf =(leaf: Leaf, inputs: InputMap, tabDepth: number): string => {
     const prefix = "  ".repeat(tabDepth)
-    if (typeof node == 'string') {
-        return `${prefix}${node}\n`
-    } else if (Array.isArray(node)) {
+    if (typeof leaf == 'string') {
+        return `${prefix}${leaf}\n`
+    } else if (Array.isArray(leaf)) {
         let out = ''
-        node.forEach((leaf) => {
-            out += typeof leaf == 'string' ? parseNode(leaf, inputs, tabDepth + 1) : parseTree(leaf, inputs, tabDepth + 1)
+        leaf.forEach((leaf) => {
+            out += typeof leaf == 'string' ? parseLeaf(leaf, inputs, tabDepth + 1) : parseTree(leaf, inputs, tabDepth + 1)
         })
         return out
     } else {
-        return parseTree(node, inputs, tabDepth + 1)
+        return parseTree(leaf, inputs, tabDepth + 1)
     }
 }
 
@@ -75,7 +75,7 @@ const parseTree = (tree: Tree, inputs: InputMap, tabDepth: number): string => {
         const args = inputs[key] ?? ''
 
         out += `${prefix}${key}${args} { \n` // If the node is a HygraphTree, we want to create the `key { }` structure
-        out += parseNode(leaf, inputs, tabDepth + 1)
+        out += parseLeaf(leaf, inputs, tabDepth + 1)
         out += `${prefix}}\n`
     })
 
@@ -96,6 +96,28 @@ const main = () => {
     
     const query = `query Query {\n${constructed}\n}`
     console.log(query)
+
+    const paths = getTreePaths(cmsNode)
+    console.dir(paths)
 }
+
+const getTreePaths = (tree: Tree): string[] => {
+    const keys = Object.keys(tree);
+    return keys.flatMap((key) => {
+        const leaf = tree[key];
+        return getLeafPaths(leaf).map((path) => `${key}.${path}`)
+    })
+}
+
+const getLeafPaths = (leaf: Leaf): string[] => {
+    if (typeof leaf == 'string') {
+        return [leaf]
+    } else if (Array.isArray(leaf)) {
+        return leaf.flatMap((val) => typeof val == 'string' ? [val] : getTreePaths(val))
+    } else {
+        return getTreePaths(leaf)
+    }
+}
+
 
 main()
