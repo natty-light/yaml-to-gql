@@ -12,6 +12,10 @@ type InputNode = {
     [input: string]: string
 }
 
+type InputMap = {
+    [input: string]: string
+}
+
 // input yaml will always look like this structure
 //
 // inputs: 
@@ -22,7 +26,7 @@ type InputNode = {
 //    - residenceWhere: ResidenceInputType
 
 const constructInputs = (nodes: Tree[]) => {
-    const inputMap: {[key: string]: string} = {}
+    const inputMap: InputMap = {}
 
     nodes.forEach((node) => {
         const key = Object.keys(node)[0] // each node should have a single key for our purposes
@@ -46,30 +50,32 @@ const constructInputs = (nodes: Tree[]) => {
     return inputMap
 }
 
-const parseNode =(node: Leaf, tabDepth: number): string => {
+const parseNode =(node: Leaf, inputs: InputMap, tabDepth: number): string => {
     const prefix = "  ".repeat(tabDepth)
     if (typeof node == 'string') {
         return `${prefix}${node}\n`
     } else if (Array.isArray(node)) {
         let out = ''
         node.forEach((leaf) => {
-            out += typeof leaf == 'string' ? parseNode(leaf, tabDepth + 1) : parseTree(leaf, tabDepth + 1)
+            out += typeof leaf == 'string' ? parseNode(leaf, inputs, tabDepth + 1) : parseTree(leaf, inputs, tabDepth + 1)
         })
         return out
     } else {
-        return parseTree(node, tabDepth + 1)
+        return parseTree(node, inputs, tabDepth + 1)
     }
 }
 
-const parseTree = (tree: Tree, tabDepth: number): string => {
+const parseTree = (tree: Tree, inputs: InputMap, tabDepth: number): string => {
     let out = ''
     const prefix = "  ".repeat(tabDepth)
     const keys = Object.keys(tree)
     
     keys.forEach((key) => {
         const leaf = tree[key]
-        out += `${prefix}${key} { \n` // If the node is a HygraphTree, we want to create the `key { }` structure
-        out += parseNode(leaf, tabDepth + 1)
+        const args = inputs[key] ?? ''
+
+        out += `${prefix}${key}${args} { \n` // If the node is a HygraphTree, we want to create the `key { }` structure
+        out += parseNode(leaf, inputs, tabDepth + 1)
         out += `${prefix}}\n`
     })
 
@@ -84,12 +90,11 @@ const main = () => {
     
     const cmsNode = { cms: parsed['cms']}
     const inputNode = { inputs : parsed['inputs']}
-
-    const constructed = parseTree(cmsNode, 1)
     const inputs = constructInputs(inputNode['inputs'] as Tree[])
+
+    const constructed = parseTree(cmsNode, inputs, 1)
     
     const query = `query Query {\n${constructed}\n}`
-    
     console.log(query)
 }
 
