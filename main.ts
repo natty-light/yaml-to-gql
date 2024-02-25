@@ -82,25 +82,6 @@ const parseTree = (tree: Tree, inputs: InputMap, tabDepth: number): string => {
     return out
 }
 
-
-const main = () => {
-    const src = Buffer.from(readFileSync('test.yaml')).toString()
-
-    const parsed: Tree = parse(src) // This assertion will hold for the YAML we are parsing
-    
-    const cmsNode = { cms: parsed['cms']}
-    const inputNode = { inputs : parsed['inputs']}
-    const inputs = constructInputs(inputNode['inputs'] as Tree[])
-
-    const constructed = parseTree(cmsNode, inputs, 1)
-    
-    const query = `query Query {\n${constructed}\n}`
-    console.log(query)
-
-    const paths = getTreePaths(cmsNode)
-    console.dir(paths)
-}
-
 const getTreePaths = (tree: Tree): string[] => {
     const keys = Object.keys(tree);
     return keys.flatMap((key) => {
@@ -119,5 +100,24 @@ const getLeafPaths = (leaf: Leaf): string[] => {
     }
 }
 
+
+
+const main = () => {
+    const src = Buffer.from(readFileSync('test.yaml')).toString()
+
+    const parsed: Tree = parse(src) // This assertion will hold for the YAML we are parsing
+    
+    const cmsNode = { cms: parsed['cms']}
+    const inputNode = { inputs : parsed['inputs']}
+    const inputs = constructInputs(inputNode['inputs'] as Tree[])
+
+    const constructed = parseTree(cmsNode, inputs, 1)
+    
+    const query = `query Query {\n${constructed}\n}`
+    console.log(query)
+
+    const paths = getTreePaths(cmsNode)
+    console.dir(paths)
+}
 
 main()
