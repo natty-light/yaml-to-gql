@@ -18,10 +18,10 @@ type InputMap = {
 
 // input yaml will always look like this structure
 //
-// inputs: 
+// inputs:
 //  - destination:
 //    - destinationWhere: DestinationInputType
-//  - cms: 
+//  - cms:
 //    - destinationWhere: DestinationInputType
 //    - residenceWhere: ResidenceInputType
 
@@ -69,7 +69,7 @@ const parseTree = (tree: Tree, inputs: InputMap, tabDepth: number): string => {
     let out = ''
     const prefix = "  ".repeat(tabDepth)
     const keys = Object.keys(tree)
-    
+
     keys.forEach((key) => {
         const leaf = tree[key]
         const args = inputs[key] ?? ''
@@ -106,18 +106,32 @@ const main = () => {
     const src = Buffer.from(readFileSync('test.yaml')).toString()
 
     const parsed: Tree = parse(src) // This assertion will hold for the YAML we are parsing
-    
+
     const cmsNode = { cms: parsed['cms']}
     const inputNode = { inputs : parsed['inputs']}
     const inputs = constructInputs(inputNode['inputs'] as Tree[])
 
     const constructed = parseTree(cmsNode, inputs, 1)
-    
+
     const query = `query Query {\n${constructed}\n}`
     console.log(query)
 
     const paths = getTreePaths(cmsNode)
     console.dir(paths)
+
+    for (const path of paths) {
+        console.log('path', getNestedField(cmsNode, path.split('.')))
+    }
+
+}
+const getNestedField = (obj: any, fields: string[]): any => {
+    const val = obj[fields[0]]
+
+    if (typeof val == 'object') {
+        return getNestedField(val, fields.slice(1, fields.length))
+    } else {
+        return val
+    }
 }
 
 main()
