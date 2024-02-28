@@ -12,7 +12,7 @@ const cmsNode: Tree = {
         ]
       },
       {
-        "residence": [
+        "residences": [
           "residenceId",
           "name"
         ]
