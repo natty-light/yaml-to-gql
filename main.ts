@@ -1,20 +1,6 @@
 import { parse } from "yaml";
 import { readFileSync } from "fs"
-
-type Tree = {
-    [field: string]: Leaf
-}
-
-type Leaf = string | (string | Tree)[] | Tree
-
-
-type InputNode = {
-    [input: string]: string
-}
-
-type InputMap = {
-    [input: string]: string
-}
+import type { InputMap, InputNode, Leaf, Tree } from "./types";
 
 // input yaml will always look like this structure
 //
@@ -38,7 +24,7 @@ export const constructInputs = (nodes: Tree[]) => {
             const inputName = Object.keys(input)[0] // input will look like {inputName: inputValue}
             const inputValue = input[inputName] as string
 
-            inputMap[key] += `${inputName}: $${inputValue}`
+            inputMap[key] += `${inputName}: ${inputValue}`
 
             if (idx != inputs.length - 1) {
                 inputMap[key] += ', '
@@ -129,20 +115,16 @@ export const getNestedField =(obj: unknown, fields: string[]): any  => {
     if (typeof obj !== 'object' || !fields.length) {
         return undefined;
     }
-
     let nestedValue: any = obj;
-
     // Iterate through fields array to access nested properties
     for (const field of fields) {
         // If nestedValue is not an object or field doesn't exist, return undefined
         if (typeof nestedValue !== 'object' || !(field in nestedValue)) {
             return undefined;
         }
-
         // Access the nested property
         nestedValue = nestedValue[field];
     }
-
     return nestedValue;
 }
 

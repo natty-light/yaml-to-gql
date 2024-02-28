@@ -8,11 +8,11 @@ cms:
       - residenceId
       - name
 
-inputs: 
+inputs:
   - destination:
-    - destinationWhere: DestinationInputType!
-  - cms: 
-    - destinationWhere: DestinationInputType!
-    - residenceWhere: ResidenceInputType!
-  - residence: 
-    - residenceWhere: ResidenceInputType!
+    - where: $destinationWhere
+  - cms:
+    - $destinationWhere: DestinationInputType!
+    - $residenceWhere: ResidenceInputType!
+  - residence:
+    - where: $residenceWhere
