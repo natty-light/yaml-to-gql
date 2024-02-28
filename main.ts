@@ -25,7 +25,7 @@ type InputMap = {
 //    - destinationWhere: DestinationInputType
 //    - residenceWhere: ResidenceInputType
 
-const constructInputs = (nodes: Tree[]) => {
+export const constructInputs = (nodes: Tree[]) => {
     const inputMap: InputMap = {}
 
     nodes.forEach((node) => {
@@ -50,7 +50,7 @@ const constructInputs = (nodes: Tree[]) => {
     return inputMap
 }
 
-const parseLeaf =(leaf: Leaf, inputs: InputMap, tabDepth: number): string => {
+export const parseLeaf =(leaf: Leaf, inputs: InputMap, tabDepth: number): string => {
     const prefix = "  ".repeat(tabDepth)
     if (typeof leaf == 'string') {
         return `${prefix}${leaf}\n`
@@ -65,7 +65,7 @@ const parseLeaf =(leaf: Leaf, inputs: InputMap, tabDepth: number): string => {
     }
 }
 
-const parseTree = (tree: Tree, inputs: InputMap, tabDepth: number): string => {
+export const parseTree = (tree: Tree, inputs: InputMap, tabDepth: number): string => {
     let out = ''
     const prefix = "  ".repeat(tabDepth)
     const keys = Object.keys(tree)
@@ -82,7 +82,7 @@ const parseTree = (tree: Tree, inputs: InputMap, tabDepth: number): string => {
     return out
 }
 
-const getTreePaths = (tree: Tree): string[] => {
+export const getTreePaths = (tree: Tree): string[] => {
     const keys = Object.keys(tree);
     return keys.flatMap((key) => {
         const leaf = tree[key];
@@ -90,7 +90,7 @@ const getTreePaths = (tree: Tree): string[] => {
     })
 }
 
-const getLeafPaths = (leaf: Leaf): string[] => {
+export const getLeafPaths = (leaf: Leaf): string[] => {
     if (typeof leaf == 'string') {
         return [leaf]
     } else if (Array.isArray(leaf)) {
@@ -99,8 +99,6 @@ const getLeafPaths = (leaf: Leaf): string[] => {
         return getTreePaths(leaf)
     }
 }
-
-
 
 const main = () => {
     const src = Buffer.from(readFileSync('test.yaml')).toString()
@@ -124,14 +122,29 @@ const main = () => {
     }
 
 }
-const getNestedField = (obj: any, fields: string[]): any => {
-    const val = obj[fields[0]]
 
-    if (typeof val == 'object') {
-        return getNestedField(val, fields.slice(1, fields.length))
-    } else {
-        return val
+// for array access, you need to pass in something like: cms.destination.residences.0.residenceId
+export const getNestedField =(obj: unknown, fields: string[]): any  => {
+    // If obj is not an object or fields is empty, return undefined
+    if (typeof obj !== 'object' || !fields.length) {
+        return undefined;
     }
+
+    let nestedValue: any = obj;
+
+    // Iterate through fields array to access nested properties
+    for (const field of fields) {
+        // If nestedValue is not an object or field doesn't exist, return undefined
+        if (typeof nestedValue !== 'object' || !(field in nestedValue)) {
+            return undefined;
+        }
+
+        // Access the nested property
+        nestedValue = nestedValue[field];
+    }
+
+    return nestedValue;
 }
+
 
 main()
