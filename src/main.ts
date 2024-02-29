@@ -10,15 +10,11 @@ import {getNestedField} from "./utils";
 
 export const getVariables = (): any => {
     return {
-        destinationWhere: {
-            where: {
-                destinationId: 22
-            }
+        "destinationWhere": {
+            "destinationId": 22
         },
-        residenceWhere: {
-            where: {
-                residenceId: 569
-            }
+        "residenceWhere": {
+            "residenceId": 569
         }
     }
 }
@@ -50,12 +46,12 @@ const main = async () => {
     }
 
     try {
-        const apiResponse = await hygraph.request(hygraphRequest)
-        console.log(apiResponse)
+        const {data: hygraphData } = await hygraph.request(hygraphRequest)
+        console.log(hygraphData)
         const apiTriggerProperties: BrazeTriggerProperties = {};
         for (const trigger of triggerPropertiesLookup) {
             const key = Object.keys(trigger)[0]
-            apiTriggerProperties[key] = getNestedField(apiResponse.data, key.split('.'))
+            apiTriggerProperties[key] = getNestedField(hygraphData, key.split('.'))
         }
         const campaignSendResponse = await triggerCampaignSend(
           env,

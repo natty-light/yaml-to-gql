@@ -1,20 +1,20 @@
-cms:
-  destination:
+Query:
+  - destination:
     - destinationId
     - name
     - locationGroup:
       - name
-    - residence:
+    - residences:
       - residenceId
       - name
 
 inputs:
+  - Query:
+      - $residenceWhere: ResidenceWhereInput
+      - $destinationWhere: DestinationWhereUniqueInput!
   - destination:
     - where: $destinationWhere
-  - cms:
-    - $destinationWhere: DestinationInputType!
-    - $residenceWhere: ResidenceInputType!
-  - residence:
+  - residences:
     - where: $residenceWhere
 
 triggerProperties:

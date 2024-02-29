@@ -14,15 +14,16 @@ export const parseYaml = (destinationId: number, residenceId: number): ParseYaml
 
   const parsed: Tree = parse(src) // This assertion will hold for the YAML we are parsing
 
-  const cmsNode = { cms: parsed['cms']}
+  const queryNode = { Query: parsed['Query']}
   const inputNode = { inputs : parsed['inputs']}
   const triggerPropertiesLookup = parsed['triggerProperties'] as TriggerPropertiesLookup
   const campaignId = parsed['campaignId'] as string;
   const inputs = constructInputs(inputNode['inputs'] as Tree[])
-  const constructed = parseTree(cmsNode, inputs, 1)
+  const constructed = parseTree(queryNode, inputs, 1)
+  const query = `query${constructed}`;
 
   return {
-    query: `query Query {\n${constructed}\n}`,
+    query,
     triggerPropertiesLookup,
     campaignId,
   }
