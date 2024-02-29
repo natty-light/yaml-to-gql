@@ -1,4 +1,4 @@
-import {getNestedField} from "../main";
+import {getNestedField} from "../utils";
 
 const obj = {
   cms: {

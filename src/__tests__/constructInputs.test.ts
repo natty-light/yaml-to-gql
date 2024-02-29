@@ -1,5 +1,5 @@
 import type {Tree} from "../types";
-import {constructInputs} from "../main";
+import {constructInputs} from "../utils";
 
 const inputNode: Tree = {
   "inputs": [

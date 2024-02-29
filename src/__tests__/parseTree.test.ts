@@ -1,5 +1,5 @@
-import {constructInputs, parseTree} from "../main";
 import {Tree} from "../types";
+import {constructInputs, parseTree} from "../utils";
 
 const cmsNode: Tree = {
   "cms": {

@@ -1,5 +1,5 @@
 import {Tree} from "../types";
-import {getTreePaths} from "../main";
+import {getTreePaths} from "../utils";
 
 const cmsNode: Tree = {
   "cms": {
