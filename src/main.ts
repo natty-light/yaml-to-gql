@@ -1,13 +1,8 @@
-import { parse } from "yaml";
-import { readFileSync } from "fs"
-import type { InputMap, InputNode, Leaf, Tree } from "./types";
-import * as timers from "timers";
 import {config} from "dotenv";
 import resolveEnvironment from "./environment";
-import {TriggerPropertiesLookup} from "./types";
 import {initBraze, triggerCampaignSend} from "./braze/braze";
 import {initHygraph} from "./hygraph/hygraph";
-import {AxiosRequestConfig} from "axios/index";
+import {AxiosRequestConfig} from "axios";
 import {BrazeTriggerProperties} from "./braze/types";
 import {parseYaml} from "./yaml";
 import {getNestedField} from "./utils";
@@ -54,23 +49,25 @@ const main = async () => {
         }),
     }
 
-    const apiResponse = await hygraph.request(hygraphRequest)
-
-    const apiTriggerProperties: BrazeTriggerProperties = {};
-    for (const trigger of triggerPropertiesLookup) {
-        const key = Object.keys(trigger)[0]
-        apiTriggerProperties[key] = getNestedField(apiResponse.data, key.split('.'))
+    try {
+        const apiResponse = await hygraph.request(hygraphRequest)
+        console.log(apiResponse)
+        const apiTriggerProperties: BrazeTriggerProperties = {};
+        for (const trigger of triggerPropertiesLookup) {
+            const key = Object.keys(trigger)[0]
+            apiTriggerProperties[key] = getNestedField(apiResponse.data, key.split('.'))
+        }
+        const campaignSendResponse = await triggerCampaignSend(
+          env,
+          braze,
+          campaignId,
+          [{ external_user_id: '' }],
+          apiTriggerProperties,
+        )
+        console.log(campaignSendResponse)
+    } catch (e) {
+        console.error(e)
     }
-
-    const campaignSendResponse = await triggerCampaignSend(
-      env,
-      braze,
-      campaignId,
-      [{ external_user_id: '' }],
-      apiTriggerProperties,
-    )
-
-    console.log(campaignSendResponse)
 }
 
 (async () => {
