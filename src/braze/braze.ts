@@ -7,6 +7,7 @@ import {
   BrazeTriggerCampaignSendResponse,
   BrazeTriggerProperties, TriggerCampaignSendReturn
 } from "./types";
+import {BRAZE_SEND_MESSAGE_ENDPOINT, BRAZE_TRIGGER_CAMPAIGN_SEND_ENDPOINT} from "./constants";
 
 export const initBraze = (env: Environment) => {
   return axios.create({
@@ -34,7 +35,7 @@ export const sendEmail = async (env: Environment, braze: AxiosInstance, template
     headers: {
       'Content-Type': 'application/json',
     },
-    url: env.BRAZE_SEND_MESSAGE_ENDPOINT,
+    url: BRAZE_SEND_MESSAGE_ENDPOINT,
     method: 'post',
     data: req,
   };
@@ -67,7 +68,7 @@ export const triggerCampaignSend = async (
     headers: {
       'Content-Type': 'application/json',
     },
-    url: env.BRAZE_TRIGGER_CAMPAIGN_SEND_ENDPOINT,
+    url: BRAZE_TRIGGER_CAMPAIGN_SEND_ENDPOINT,
     method: 'post',
     data: req,
   };
