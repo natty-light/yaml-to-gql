@@ -84,8 +84,6 @@ export type BrazeTriggerCampaignSendRequest = {
 };
 
 /******************** RESPONSES ***********************************************/
-export type BrazeResponseWrapper<T> = { [key: string]: T} & { success: boolean};
-
 export type BrazeResponse = {
   message?: string;
 };
@@ -99,7 +97,6 @@ export type TriggerCampaignSendReturn = {
   success: boolean;
   dispatch_id: string;
 }
-
 
 /******************** UTILITY TYPES *******************************************/
 export type BrazeEmailObject = {
@@ -162,33 +159,6 @@ type BrazeCustomAttribute = AttributeValue | AttributeValue[] | AddRemove<Attrib
 
 type BrazeCustomAttributeObject = {
   [customAttribute: string]: BrazeCustomAttribute;
-};
-
-export type BrazeUserAttributesObject = Partial<BrazeUserProfileFields> &
-  BrazeCustomAttributeObject & {
-  // One of "external_id" or "user_alias" or "braze_id" is required
-
-  // (optional, string) see External User ID,
-  external_id?: string;
-
-  // (optional, User Alias Object),
-  user_alias?: unknown;
-
-  // (optional, string) Braze User Identifier,
-  braze_id?: string;
-
-  // Setting this flag to true will put the API in "Update Only" mode.
-  // When using a "user_alias", "Update Only" defaults to true.
-  // (optional, boolean),
-  _update_existing_only?: boolean;
-
-  // (optional, boolean),
-  push_token_import?: boolean;
-};
-
-export type BrazeUserProfileFields = {
-  first_name?: string;
-  email?: string;
 };
 
 export type BrazeTriggerProperties = {

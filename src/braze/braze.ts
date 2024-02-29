@@ -3,7 +3,6 @@ import {Environment} from "../environment";
 import {AxiosRequestConfig} from "axios/index";
 import {
   BrazeRecipient,
-  BrazeResponseWrapper,
   BrazeTriggerCampaignSendRequest,
   BrazeTriggerCampaignSendResponse,
   BrazeTriggerProperties, TriggerCampaignSendReturn
