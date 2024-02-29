@@ -46,12 +46,13 @@ const main = async () => {
     }
 
     try {
-        const {data: hygraphData } = await hygraph.request(hygraphRequest)
+        const { data: hygraphData } = await hygraph.request<{ data: any }>(hygraphRequest)
         console.log(hygraphData)
         const apiTriggerProperties: BrazeTriggerProperties = {};
         for (const trigger of triggerPropertiesLookup) {
             const key = Object.keys(trigger)[0]
-            apiTriggerProperties[key] = getNestedField(hygraphData, key.split('.'))
+            const path = trigger[key];
+            apiTriggerProperties[key] = getNestedField(hygraphData, path.split('.'))
         }
         const campaignSendResponse = await triggerCampaignSend(
           env,

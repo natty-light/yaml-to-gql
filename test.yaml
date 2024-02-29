@@ -18,10 +18,10 @@ inputs:
     - where: $residenceWhere
 
 triggerProperties:
-  - destinationId: 'cms.destination.destinationId'
-  - destinationName: 'cms.destination.name'
-  - destinationLocationGroup: 'cms.destination.locationGroup.name'
-  - residenceName: 'cms.destination.residences.0.name'
-  - residenceId: 'cms.destination.residences.0.residenceId'
+  - destinationId: data.destination.destinationId
+  - destinationName: data.destination.name
+  - destinationLocationGroup: data.destination.locationGroup.name
+  - residenceName: data.destination.residences.0.name
+  - residenceId: data.destination.residences.0.residenceId
 
 campaignId: 'braze-campaign-id'

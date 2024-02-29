@@ -1,17 +1,17 @@
 import {getNestedField} from "../utils";
 
 const obj = {
-  cms: {
-    destination: {
-      destinationId: 1,
-      name: 'destinationName',
-      locationGroup: {
-        name: 'locationGroupName'
+  "data": {
+    "destination": {
+      "destinationId": 22,
+      "name": "Montage Laguna Beach",
+      "locationGroup": {
+        "name": "Laguna Beach, California"
       },
-      residences: [
+      "residences": [
         {
-          residenceId: 2,
-          name: 'residenceName'
+          "residenceId": 569,
+          "name": "Montage Resort"
         }
       ]
     }
@@ -20,14 +20,14 @@ const obj = {
 
 describe('getNestedField: Deep object access', () => {
   it('given an object path a an array of strings, it accesses deep fields on an object', () => {
-    const path = 'cms.destination.destinationId'
+    const path = 'data.destination.destinationId'
     const val = getNestedField(obj, path.split('.'))
-    expect(val).toBe(1)
+    expect(val).toBe(22)
   })
 
   it('given an object path a an array of strings, it accesses deep fields on an object', () => {
-    const path = 'cms.destination.residences.0.residenceId'
+    const path = 'data.destination.residences.0.residenceId'
     const val = getNestedField(obj, path.split('.'))
-    expect(val).toBe(2)
+    expect(val).toBe(569)
   })
 })
