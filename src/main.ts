@@ -1,6 +1,14 @@
 import { parse } from "yaml";
 import { readFileSync } from "fs"
 import type { InputMap, InputNode, Leaf, Tree } from "./types";
+import * as timers from "timers";
+import {config} from "dotenv";
+import resolveEnvironment from "./environment";
+import {TriggerPropertiesLookup} from "./types";
+import {initBraze} from "./braze/braze";
+import {initHygraph} from "./hygraph/hygraph";
+import {AxiosRequestConfig} from "axios/index";
+import {BrazeTriggerProperties} from "./braze/types";
 
 // input yaml will always look like this structure
 //
@@ -86,29 +94,6 @@ export const getLeafPaths = (leaf: Leaf): string[] => {
     }
 }
 
-const main = () => {
-    const src = Buffer.from(readFileSync('test.yaml')).toString()
-
-    const parsed: Tree = parse(src) // This assertion will hold for the YAML we are parsing
-
-    const cmsNode = { cms: parsed['cms']}
-    const inputNode = { inputs : parsed['inputs']}
-    const inputs = constructInputs(inputNode['inputs'] as Tree[])
-
-    const constructed = parseTree(cmsNode, inputs, 1)
-
-    const query = `query Query {\n${constructed}\n}`
-    console.log(query)
-
-    const paths = getTreePaths(cmsNode)
-    console.dir(paths)
-
-    for (const path of paths) {
-        console.log('path', getNestedField(cmsNode, path.split('.')))
-    }
-
-}
-
 // for array access, you need to pass in something like: cms.destination.residences.0.residenceId
 export const getNestedField =(obj: unknown, fields: string[]): any  => {
     // If obj is not an object or fields is empty, return undefined
@@ -128,5 +113,77 @@ export const getNestedField =(obj: unknown, fields: string[]): any  => {
     return nestedValue;
 }
 
+const parseYaml = (destinationId: number, residenceId: number): { query: string, triggerPropertiesLookup: TriggerPropertiesLookup  } => {
+    const src = Buffer.from(readFileSync('test.yaml')).toString()
 
-main()
+    const parsed: Tree = parse(src) // This assertion will hold for the YAML we are parsing
+
+    const cmsNode = { cms: parsed['cms']}
+    const inputNode = { inputs : parsed['inputs']}
+    const triggerPropertiesLookup = parsed['triggerProperties'] as TriggerPropertiesLookup
+
+    const inputs = constructInputs(inputNode['inputs'] as Tree[])
+    const constructed = parseTree(cmsNode, inputs, 1)
+
+    return {
+        query: `query Query {\n${constructed}\n}`,
+        triggerPropertiesLookup,
+    }
+}
+
+const getVariables = (): any => {
+    return {
+        destinationWhere: {
+            where: {
+                destinationId: 22
+            }
+        },
+        residenceWhere: {
+            where: {
+                residenceId: 569
+            }
+        }
+    }
+}
+
+const main = async () => {
+    config();
+    const env = resolveEnvironment();
+    if (!env) {
+        return
+    }
+
+    const braze = initBraze(env)
+    const hygraph = initHygraph(env);
+
+    const {query, triggerPropertiesLookup } = parseYaml(22, 1);
+    console.log(query)
+    const variables = getVariables();
+
+    const hygraphRequest: AxiosRequestConfig = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: JSON.stringify({
+            query,
+            variables,
+        }),
+    }
+
+    const apiResponse = await hygraph.request(hygraphRequest)
+
+    const apiTriggerProperties: BrazeTriggerProperties = {};
+    for (const trigger of triggerPropertiesLookup) {
+        const key = Object.keys(trigger)[0]
+        apiTriggerProperties[key] = getNestedField(apiResponse.data, key.split('.'))
+    }
+
+    const brazeRequest: AxiosRequestConfig = {
+
+    }
+}
+
+(async () => {
+    await main();
+})()
